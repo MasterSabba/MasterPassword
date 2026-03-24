@@ -3,137 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MasterPassaword - Chaos Edition</title>
+    <title>MasterPassaword - 100 levels</title>
     <style>
         :root {
-            --bg: #08080a;
-            --card: #121217;
-            --accent: #00f2ff;
-            --error: #ff2a6d;
-            --success: #05ffa1;
-            --text: #e0e0e5;
-            --exit-gray: #4a4a4a; /* Grigio per il pulsante */
+            --bg: #050508; --card: #0d0d12; --accent: #00f2ff;
+            --error: #ff2a6d; --success: #05ffa1; --text: #e0e0e5;
+            --fire: #ff4500; --chicken: #ffd700; --gray: #4a4a4a;
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: var(--bg); color: var(--text);
             font-family: 'JetBrains Mono', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            margin: 0; padding: 20px;
         }
 
-        /* STILE PER IL PULSANTE DI USCITA */
         .exit-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 35px;
-            height: 35px;
-            border: 1px solid var(--exit-gray);
-            color: var(--exit-gray);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            border-radius: 6px;
-            transition: 0.3s;
+            position: fixed; top: 20px; left: 20px;
+            width: 35px; height: 35px; border: 1px solid var(--gray);
+            color: var(--gray); text-decoration: none; display: flex;
+            align-items: center; justify-content: center; font-size: 20px; border-radius: 5px;
             z-index: 2000;
-            cursor: pointer;
-        }
-
-        .exit-button:hover {
-            color: #ccc;
-            border-color: #ccc;
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .header-box {
-            position: sticky;
-            top: 10px;
-            z-index: 1000;
-            width: 100%;
-            max-width: 700px;
-            background: rgba(18, 18, 23, 0.9);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid #333;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            text-align: center;
-            margin: 0 0 15px 0;
-            font-size: 1.5rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 4px;
+            position: sticky; top: 10px; z-index: 1000;
+            width: 100%; max-width: 800px;
+            background: rgba(13, 13, 18, 0.95); backdrop-filter: blur(10px);
+            padding: 20px; border: 1px solid #333; border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0,0,0,1); margin-bottom: 20px;
         }
 
         textarea {
-            width: 100%;
-            background: #000;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: var(--success);
-            font-size: 1.3rem;
-            padding: 15px;
-            box-sizing: border-box;
-            outline: none;
-            resize: none;
+            width: 100%; background: #000; border: 2px solid #333;
+            border-radius: 8px; color: var(--success); font-size: 1.1rem;
+            padding: 15px; outline: none; resize: none;
         }
 
-        .stats { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8rem; color: #666; }
+        .main-stats {
+            display: flex; justify-content: space-between; margin-top: 15px;
+            font-size: 0.9rem; font-weight: bold; color: var(--accent);
+        }
+
+        .chaos-bar {
+            display: flex; justify-content: space-around; margin-top: 10px;
+            font-size: 0.75rem; border-top: 1px solid #222; padding-top: 10px;
+            display: none; /* Appare al livello 80 */
+        }
 
         #rules-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 100px;
+            width: 100%; max-width: 800px;
+            display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px;
         }
 
         .rule {
-            padding: 20px;
-            border-radius: 12px;
-            background: var(--card);
-            border: 1px solid #222;
-            transition: all 0.3s ease;
+            padding: 15px; border-radius: 8px; background: var(--card);
+            border: 1px solid #222; transition: 0.3s;
         }
 
-        .rule.invalid { order: -1; border-color: var(--error); background: rgba(255, 42, 109, 0.05); }
-        .rule.valid { border-color: var(--success); opacity: 0.3; transform: scale(0.97); }
+        .rule.invalid { order: -1; border-color: var(--error); background: rgba(255, 42, 109, 0.02); }
+        .rule.valid { border-color: var(--success); opacity: 0.2; transform: scale(0.98); }
 
-        .visual-challenge {
-            margin-top: 15px;
-            padding: 15px;
-            background: #000;
-            border: 1px dashed var(--accent);
-            border-radius: 8px;
-            text-align: center;
+        #win-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 9999;
         }
-
-        .visual-icon { font-size: 3.5rem; display: block; margin-bottom: 10px; }
     </style>
 </head>
 <body>
+
+    <div id="win-screen">
+        <h1 style="color: var(--success); font-size: 3rem;">GIOCO COMPLETATO ✅</h1>
+        <p>Hai superato i 100 livelli del caos.</p>
+        <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">Ricomincia</button>
+    </div>
 
     <a href="https://mastersabba.github.io/MasterSabba/" class="exit-button">×</a>
 
     <div class="header-box">
         <h1>MASTER PASSAWORD</h1>
-        <textarea id="pwd-input" placeholder="Componi la chiave..." rows="2"></textarea>
-        <div class="stats">
-            <span>SBLOCCATE: <b id="lvl">1</b>/100</span>
-            <span>SOMMA: <b id="sum">0</b>/25</span>
+        <textarea id="pwd-input" spellcheck="false" placeholder="Inserisci la password..."></textarea>
+        
+        <div class="main-stats">
+            <span>LIVELLO: <span id="lvl-num">1</span>/100</span>
+            <span> <span id="sum-val">0</span>/25</span>
+        </div>
+
+        <div id="chaos-bar" class="chaos-bar">
+            <div style="color: var(--chicken)">POLLO: <span id="hp">100</span>% 🍗</div>
+            <div id="sync-box">SYNC: <span id="sync">---</span></div>
+            <div style="color: var(--fire)">FIRE: <span id="fire">0</span>% 🔥</div>
         </div>
     </div>
 
@@ -142,81 +102,127 @@
 <script>
     const input = document.getElementById('pwd-input');
     const container = document.getElementById('rules-container');
-    const lvlDisp = document.getElementById('lvl');
-    const sumDisp = document.getElementById('sum');
+    const hpDisp = document.getElementById('hp');
+    const fireDisp = document.getElementById('fire');
+    const syncDisp = document.getElementById('sync');
+    const sumDisp = document.getElementById('sum-val');
+    const lvlDisp = document.getElementById('lvl-num');
+    const chaosBar = document.getElementById('chaos-bar');
 
+    let hp = 100, fire = 0, currentLevel = 1, syncCode = "X9Z";
     const getSum = (s) => (s.match(/\d/g) || []).reduce((a, b) => a + Number(b), 0);
 
+    // 100 LIVELLI DI REGOLE
     const rules = [
-        { t: "La password deve contenere almeno 10 caratteri.", v: p => p.length >= 10 },
-        { t: "Includi un numero dispari.", v: p => /[13579]/.test(p) },
-        { t: "La somma dei numeri deve essere esattamente 25.", v: p => getSum(p) === 25 },
+        { t: "Minimo 5 caratteri.", v: p => p.length >= 5 },
+        { t: "Includi almeno un numero.", v: p => /\d/.test(p) },
+        { t: "Includi una lettera maiuscola.", v: p => /[A-Z]/.test(p) },
+        { t: "Includi un carattere speciale (@, #, !, %).", v: p => /[^A-Za-z0-9]/.test(p) },
+        { t: "La somma delle cifre deve essere ESATTAMENTE 25.", v: p => getSum(p) === 25 },
         { t: "Includi un mese dell'anno (es. Aprile).", v: p => /gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre/i.test(p) },
-        { t: "SFIDA VISIVA: Digita il tema di questi simboli.", v: p => /pianet|spazio|astron/i.test(p), isVisual: true, icon: "🪐🚀🌑", hint: "Viene da lontano..." },
-        { t: "Includi un numero romano (I, V, X...).", v: p => /[IVXLCDM]/.test(p) },
-        { t: "Deve contenere la parola 'Sabba'.", v: p => p.toLowerCase().includes('sabba') },
-        { t: "Includi un codice colore HEX (es. #00ff00).", v: p => /#[0-9A-Fa-f]{6}/.test(p) },
-        { t: "Inserisci l'emoji del tuo segno zodiacale (es. ♈, ♌).", v: p => /[\u2648-\u2653]/.test(p) || /♈|♉|♊|♋|♌|♍|♎|♏|♐|♑|♒|♓/.test(p) },
-        { t: "SFIDA VISIVA: Cosa sono?", v: p => /animal|natur|giungla/i.test(p), isVisual: true, icon: "🦁🐯🐍", hint: "Vivono liberi..." },
-        { t: "Includi un elemento chimico (es: He, Fe).", v: p => /H|He|Li|Be|B|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Fe|Au|Ag/i.test(p) },
-        { t: "Deve contenere l'indirizzo mastersabba.github.io.", v: p => p.includes("mastersabba.github.io") },
-        { t: "La password deve finire con un punto interrogativo (?).", v: p => p.endsWith('?') }
+        { t: "Includi un numero romano (I, V, X, L, C, D, M).", v: p => /[IVXLCDM]/.test(p) },
+        { t: "Includi una parola comune in inglese (es. 'blue', 'shadow', 'water').", v: p => /red|blue|green|yellow|black|white|water|fire|shadow|light|dark|hello|world|master|password|game|apple|sun|moon|sky/i.test(p) },
+        { t: "Includi il nome di un pianeta.", v: p => /mercurio|venere|terra|marte|giove|saturno|urano|nettuno/i.test(p) },
+        { t: "Includi un elemento della tavola periodica (He, Fe, Au...).", v: p => /H|He|Li|Be|B|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Fe|Au|Ag/i.test(p) },
+        { t: "Includi un paese (es. Italia, Brasile).", v: p => /italia|francia|spagna|giappone|cina|brasile|canada|egitto|germania/i.test(p) },
+        { t: "Includi una data valida (gg/mm/aaaa).", v: p => /\d{2}\/\d{2}\/\d{4}/.test(p) },
+        { t: "Deve contenere un palindromo di almeno 4 lettere (es. 'anna').", v: p => (p.match(/[a-zA-Z]{4,}/g) || []).some(w => w.toLowerCase() === w.toLowerCase().split('').reverse().join('')) },
+        { t: "Includi l'indirizzo mastersabba.github.io.", v: p => p.includes("mastersabba.github.io") },
+        { t: "Deve finire con un punto interrogativo (?).", v: p => p.endsWith('?') },
+        { t: "Sequenza numerica crescente (es. 123).", v: p => /012|123|234|345|456|567|678|789/.test(p) },
+        { t: "Equilibrio: Stesso numero di cifre Pari e Dispari.", v: p => {
+            let d = p.match(/\d/g) || [];
+            return d.length > 0 && d.filter(n => n%2==0).length === d.filter(n => n%2!=0).length;
+        }},
+        { t: "Includi un giorno della settimana.", v: p => /lunedi|martedi|mercoledi|giovedi|venerdi|sabato|domenica/i.test(p) }
     ];
 
-    for(let i = 14; i <= 100; i++) {
-        if (i % 12 === 0) {
-            rules.push({ t: "SFIDA VISIVA: Tema musicale.", v: p => /music|band|strument/i.test(p), isVisual: true, icon: "🎸🎹🥁", hint: "Crea suoni..." });
-        } else if (i % 5 === 0) {
-            rules.push({ t: `Inserisci il numero magico ${i * 9}.`, v: p => p.includes((i * 9).toString()) });
-        } else if (i % 3 === 0) {
-            let char = String.fromCharCode(65 + (i % 26));
-            rules.push({ t: `Inserisci almeno ${Math.floor(i/30)+1} volte la lettera '${char}'.`, v: p => (p.match(new RegExp(char, 'g'))||[]).length >= Math.floor(i/30)+1 });
-        } else {
-            rules.push({ t: `Deve contenere la parola cifrata '${btoa(i).substring(0,3)}'.`, v: p => p.includes(btoa(i).substring(0,3)) });
-        }
+    // Generatore fino a 80
+    for(let i = rules.length; i < 80; i++) {
+        rules.push({
+            t: `Inserisci la stringa di sicurezza '${btoa(i).substring(0,3)}'.`,
+            v: (p, idx=i) => p.includes(btoa(idx).substring(0,3))
+        });
     }
 
-    let level = 1;
+    // Regole 80-100 (Caos finale)
+    rules.push({ t: "IL POLLO È NATO: Inserisci 🐔 nella password.", v: p => p.includes("🐔") });
+    rules.push({ t: "SFAMA IL POLLO: Inserisci almeno 3 semi (*) per tenerlo in vita.", v: p => (p.match(/\*/g)||[]).length >= 3 });
+    rules.push({ t: "ESTINTORE: Inserisci 💧💧💧 per prevenire l'incendio.", v: p => (p.match(/💧/g)||[]).length >= 3 });
+    rules.push({ t: () => `SINCRONIZZAZIONE: Includi il codice dinamico ${syncCode}.`, v: p => p.includes(syncCode) });
+    rules.push({ t: "MUTAZIONE: Gestisci le lettere che cambiano da sole.", v: p => true });
 
-    function refresh() {
-        const val = input.value;
-        const currentSum = getSum(val);
-        sumDisp.innerText = currentSum;
-        sumDisp.style.color = currentSum === 25 ? "var(--success)" : "var(--error)";
+    for(let i = rules.length; i < 99; i++) {
+        rules.push({ t: `Raggiungi una lunghezza di almeno ${50 + i} caratteri.`, v: p => p.length >= 50 + i });
+    }
+    rules.push({ t: "ULTIMA REGOLA: Soddisfa ogni condizione simultaneamente per 5 secondi.", v: p => true });
+
+    // GAME LOOP (Ogni 3s)
+    setInterval(() => {
+        if(currentLevel >= 80) chaosBar.style.display = 'flex';
+
+        let val = input.value;
         
+        // Sincronizzazione
+        syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
+        syncDisp.innerText = syncCode;
+
+        if(currentLevel >= 81) {
+            // Logica Pollo
+            if(!val.includes("🐔") || (val.match(/\*/g)||[]).length < 3) hp = Math.max(0, hp - 3);
+            else if(hp < 100) hp += 1;
+            if(hp <= 0) { alert("IL POLLO È MORTO."); location.reload(); }
+        }
+
+        if(currentLevel >= 83) {
+            // Logica Fuoco
+            if(val.length > 40) fire = Math.min(100, fire + 2);
+            if(val.includes("💧💧💧")) fire = Math.max(0, fire - 10);
+            if(fire >= 100) { input.value = val.substring(0, val.length - 4); fire = 70; }
+        }
+
+        // Mutazione casuale (Lv 85+)
+        if(currentLevel >= 85 && Math.random() > 0.8) {
+            let a = input.value.split('');
+            let idx = Math.floor(Math.random()*a.length);
+            if(/[a-zA-Z]/.test(a[idx])) a[idx] = String.fromCharCode(65 + Math.floor(Math.random()*26));
+            input.value = a.join('');
+        }
+
+        hpDisp.innerText = hp;
+        fireDisp.innerText = Math.floor(fire);
+        check();
+    }, 3000);
+
+    function check() {
+        const val = input.value;
+        const s = getSum(val);
+        sumDisp.innerText = s;
+        sumDisp.style.color = s === 25 ? "var(--success)" : "var(--error)";
+        lvlDisp.innerText = currentLevel;
+
         let html = "";
-        let checkProgress = true;
+        let allOk = true;
 
-        for (let i = 0; i < level; i++) {
-            const rule = rules[i];
-            const ok = rule.v(val);
-            if(!ok) checkProgress = false;
-
-            html += `
-                <div class="rule ${ok ? 'valid' : 'invalid'}">
-                    <div style="font-size:0.7rem; color:#555; margin-bottom:5px;">REGOLA ${i+1}</div>
-                    <div class="rule-text">${rule.t}</div>
-                    ${rule.isVisual && !ok ? `
-                        <div class="visual-challenge">
-                            <span class="visual-icon">${rule.icon}</span>
-                            <div style="font-size:0.8rem; color:#888">${rule.hint}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
+        for (let i = 0; i < currentLevel; i++) {
+            let r = rules[i];
+            let txt = typeof r.t === 'function' ? r.t() : r.t;
+            let ok = r.v(val);
+            if(!ok) allOk = false;
+            html += `<div class="rule ${ok ? 'valid' : 'invalid'}"><b>LIVELLO ${i+1}</b>: ${txt}</div>`;
         }
 
         container.innerHTML = html;
-        lvlDisp.innerText = level;
-
-        if(checkProgress && level < rules.length) {
-            level++;
-            refresh();
+        if(allOk && currentLevel < rules.length) {
+            currentLevel++;
+            check();
+        } else if(allOk && currentLevel === rules.length) {
+            document.getElementById('win-screen').style.display = 'flex';
         }
     }
 
-    input.addEventListener('input', refresh);
-    refresh();
+    input.addEventListener('input', check);
+    check();
 </script>
 </body>
 </html>
