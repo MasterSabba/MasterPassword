@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MasterPassaword - Interactive Chaos</title>
+    <title>MasterPassword: The 100 Trial</title>
     <style>
         :root {
             --bg: #050508; --card: #0d0d12; --accent: #00f2ff;
@@ -15,74 +15,67 @@
             background-color: var(--bg); color: var(--text);
             font-family: 'JetBrains Mono', monospace;
             display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden; margin: 0; padding: 20px;
+            margin: 0; padding: 20px; transition: 0.1s;
         }
 
-        /* Effetto scossa per livelli alti */
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            40% { transform: translate(3px, 2px) rotate(-1deg); }
-            100% { transform: translate(1px, -1px) rotate(0deg); }
+            0% { transform: translate(1px, 1px); }
+            20% { transform: translate(-2px, -1px); }
+            40% { transform: translate(2px, 1px); }
+            100% { transform: translate(0, 0); }
         }
-
-        .shake-effect { animation: shake 0.5s infinite; }
+        .shake { animation: shake 0.2s infinite; }
 
         .header-box {
-            position: sticky; top: 10px; z-index: 1000;
-            width: 100%; max-width: 800px;
+            position: sticky; top: 10px; z-index: 1000; width: 100%; max-width: 700px;
             background: rgba(13, 13, 18, 0.95); backdrop-filter: blur(10px);
             padding: 20px; border: 1px solid #333; border-radius: 15px;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
+            box-shadow: 0 0 40px rgba(0,0,0,1); margin-bottom: 20px;
         }
 
         textarea {
             width: 100%; background: #000; border: 2px solid #333;
-            border-radius: 8px; color: var(--success); font-size: 1.2rem;
-            padding: 15px; outline: none; transition: 0.2s;
+            border-radius: 8px; color: var(--success); font-size: 1.1rem;
+            padding: 15px; outline: none; box-sizing: border-box;
         }
 
         .rule {
-            width: 100%; max-width: 800px; padding: 15px; margin: 10px 0;
+            width: 100%; max-width: 700px; padding: 15px; margin: 5px 0;
             border-radius: 8px; background: var(--card); border: 1px solid #222;
         }
-
         .rule.invalid { border-color: var(--error); order: -1; }
         .rule.valid { border-color: var(--success); opacity: 0.3; }
 
-        .interactive-box {
-            background: #000; border: 1px dashed var(--accent);
-            padding: 10px; margin-top: 10px; text-align: center;
+        .visual-box {
+            background: #1a1a24; padding: 10px; border-radius: 5px;
+            margin-top: 10px; text-align: center; border: 1px dashed var(--accent);
         }
 
         #win-screen {
             position: fixed; inset: 0; background: var(--bg);
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
         }
-
-        .btn-restart { padding: 15px 30px; background: var(--accent); border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="win-screen">
-    <h1 style="color: var(--success)">SISTEMA VIOLATO ✅</h1>
-    <p>Livello 100 Completato.</p>
-    <button class="btn-restart" onclick="location.reload()">REBOOT</button>
+    <h1 style="color: var(--success)">SISTEMA DECRIPTATO ✅</h1>
+    <p>Hai superato i 100 livelli.</p>
+    <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">RESTART</button>
 </div>
 
-<div class="header-box" id="main-header">
-    <h1 style="letter-spacing: 5px;">MASTER PASSWORD</h1>
-    <textarea id="pwd-input" spellcheck="false" placeholder="Inserisci sequenza..."></textarea>
-    <div style="display: flex; justify-content: space-between; margin-top: 10px; color: var(--accent);">
-        <span>LV: <span id="lvl">1</span>/100</span>
-        <span> <span id="sum">0</span>/25</span>
+<div class="header-box" id="main-ui">
+    <h2 style="margin: 0 0 10px 0; color: var(--accent)">MASTER PASSWORD </h2>
+    <textarea id="pwd-input" spellcheck="false" placeholder="Inizia a scrivere..."></textarea>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold;">
+        <span> <span id="lvl">1</span>/100</span>
+        <span id="sum-box"> <span id="sum">0</span>/25</span>
     </div>
-    <div id="stats" style="display:none; margin-top:10px; font-size: 0.8rem; border-top: 1px solid #333; padding-top:10px;">
-        <span style="color:var(--chicken)">🍗 <span id="hp">100</span>%</span> | 
-        <span style="color:var(--fire)">🔥 <span id="fire">0</span>%</span> | 
-        <span id="sync-ui">SYNC: <span id="sync-code">---</span></span>
+    <div id="chaos-stats" style="display:none; margin-top:10px; border-top: 1px solid #333; padding-top:10px;">
+        <span style="color:var(--chicken)">POLLO: <span id="hp">100</span>%</span> | 
+        <span style="color:var(--fire)">FIRE: <span id="fire">0</span>%</span> | 
+        <span id="sync-label">SYNC: <span id="sync-val" style="color:var(--accent)">---</span></span>
     </div>
 </div>
 
@@ -91,117 +84,169 @@
 <script>
     const input = document.getElementById('pwd-input');
     const container = document.getElementById('rules-container');
-    const lvlDisp = document.getElementById('lvl');
-    const sumDisp = document.getElementById('sum');
     
     let currentLevel = 1;
-    let syncCode = "XYZ";
-    let hp = 100, fire = 0;
-    let simonSequence = "⚡🔥❄️";
-    let showSimon = true;
+    let hp = 100, fire = 0, syncCode = "";
 
     const getSum = (s) => (s.match(/\d/g) || []).reduce((a, b) => a + Number(b), 0);
 
-    // REGOLE FISSE 1-100
+    // --- DEFINIZIONE REGOLE UNICHE (1-100) ---
     const rules = [
         { t: "Minimo 6 caratteri.", v: p => p.length >= 6 },
         { t: "Includi un numero.", v: p => /\d/.test(p) },
         { t: "Includi una Maiuscola.", v: p => /[A-Z]/.test(p) },
-        { t: "Somma cifre = 25.", v: p => getSum(p) === 25 },
         { t: "Includi un carattere speciale (@, #, !).", v: p => /[@#!]/.test(p) },
-        { t: "Includi un mese.", v: p => /gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre/i.test(p) },
-        { t: "Includi un numero romano.", v: p => /[IVXLCDM]/.test(p) },
-        { t: "Finisci con '?'.", v: p => p.endsWith('?') },
-        { t: "Includi un pianeta.", v: p => /marte|terra|giove|saturno|venere|urano|nettuno/i.test(p) },
-        { t: "Includi un colore inglese.", v: p => /red|blue|green|yellow|white|black/i.test(p) },
-        // ... (Saltiamo alla parte interattiva per brevità nel codice, ma i livelli ci sono tutti)
+        { t: "Somma delle cifre = 25.", v: p => getSum(p) === 25 },
+        { t: "Includi un mese (es. Marzo).", v: p => /gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre/i.test(p) },
+        { t: "Includi un numero romano (I, V, X...).", v: p => /[IVXLCDM]/.test(p) },
+        { t: "Includi un pianeta del sistema solare.", v: p => /mercurio|venere|terra|marte|giove|saturno|urano|nettuno/i.test(p) },
+        { t: "Includi un colore in inglese.", v: p => /red|blue|green|yellow|black|white|purple/i.test(p) },
+        { t: "Includi un elemento chimico (Fe, Au, O).", v: p => /He|Li|Be|B|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Fe|Au|Ag/i.test(p) },
+        { t: "Finisci con un punto interrogativo (?).", v: p => p.endsWith('?') },
+        { t: "Includi un palindromo di 3 lettere (es. 'ara').", v: p => (p.match(/[a-zA-Z]{3,}/g) || []).some(w => w.toLowerCase() === w.toLowerCase().split('').reverse().join('')) },
+        { t: "Includi la parola 'SFIDA'.", v: p => p.includes("SFIDA") },
+        { t: "Includi un giorno della settimana.", v: p => /lunedi|martedi|mercoledi|giovedi|venerdi|sabato|domenica/i.test(p) },
+        { t: "Stesso numero di cifre Pari e Dispari.", v: p => {
+            let d = p.match(/\d/g) || [];
+            return d.length > 0 && d.filter(n => n%2==0).length === d.filter(n => n%2!=0).length;
+        }},
+        { t: "Includi mastersabba.github.io", v: p => p.includes("mastersabba.github.io") },
+        { t: "Includi una sequenza numerica (123, 456...).", v: p => /012|123|234|345|456|567|678|789/.test(p) },
+        { t: "Includi un metallo prezioso.", v: p => /oro|argento|platino/i.test(p) },
+        { t: "Includi una capitale europea.", v: p => /roma|parigi|berlino|madrid|londra|vienna|lisbona/i.test(p) },
+        
+        // --- LIVELLI INTERATTIVI (20-79) ---
+        { t: "VISIVO: Digita la categoria di questi oggetti.", v: p => /monument|edifici/i.test(p), box: "🗼🗽🏯", hint: "Turismo..." },
+        { t: "MATEMATICA: Risolvi e scrivi il risultato: (15 * 2) - 10", v: p => p.includes("20") },
+        { t: "Includi il nome di un supereroe Marvel.", v: p => /spiderman|ironman|thor|hulk|blackwidow/i.test(p) },
+        { t: "Includi una marca di auto italiana.", v: p => /ferrari|fiat|lancia|alfa/i.test(p) },
+        { t: "LOGICA: Scrivi la parola 'PASSWORD' al contrario.", v: p => p.includes("DROWSSAP") },
+        { t: "VISIVO: Qual è il tema?", v: p => /musica|strument/i.test(p), box: "🎸🎹🥁" },
+        { t: "Includi un linguaggio di programmazione.", v: p => /python|java|html|css|javascript|ruby/i.test(p) },
+        { t: "Includi una divinità greca.", v: p => /zeus|era|ares|atena|apollo|afrodite/i.test(p) },
+        { t: "Includi una stagione.", v: p => /primavera|estate|autunno|inverno/i.test(p) },
+        { t: "Includi un'unità di misura (kg, cm, volt).", v: p => /kg|cm|km|volt|watt/i.test(p) },
+        { t: "VISIVO: Categoria?", v: p => /spazio|astron/i.test(p), box: "🪐🚀☀️" },
+        { t: "Includi un famoso scienziato.", v: p => /einstein|newton|tesla|curie|galilei/i.test(p) },
+        { t: "Includi una delle 7 meraviglie del mondo.", v: p => /colosseo|petra|taj mahal|machu picchu/i.test(p) },
+        { t: "Includi un continente.", v: p => /europa|asia|africa|america|oceania|antartide/i.test(p) },
+        { t: "Includi un social network.", v: p => /tiktok|instagram|facebook|reddit/i.test(p) },
+        { t: "VISIVO: Digita la categoria.", v: p => /frutta|cibo/i.test(p), box: "🍎🍌🍇" },
+        { t: "Includi una valuta ($, €, £, ¥).", v: p => /[$€£¥]/.test(p) },
+        { t: "Includi una nota musicale (Do, Re, Mi...).", v: p => /do|re|mi|fa|sol|la|si/i.test(p) },
+        { t: "Includi un tipo di pasta.", v: p => /penne|spaghetti|fusilli|rigatoni/i.test(p) },
+        { t: "Includi un oceano.", v: p => /pacifico|atlantico|indiano|artico/i.test(p) },
+        { t: "VISIVO: Cosa sono?", v: p => /animal|natur/i.test(p), box: "🦁🐯🐘" },
+        { t: "Includi un imperatore romano.", v: p => /cesare|augusto|nerone|traiano/i.test(p) },
+        { t: "Includi un vulcano italiano.", v: p => /vesuvio|etna|stromboli/i.test(p) },
+        { t: "Includi la parola 'BINGO'.", v: p => p.includes("BINGO") },
+        { t: "Includi un mezzo di trasporto.", v: p => /treno|aereo|nave|auto/i.test(p) },
+        { t: "VISIVO: Tema comune.", v: p => /sport|gioch/i.test(p), box: "⚽🎾🏀" },
+        { t: "Includi un fiore.", v: p => /rosa|tulipano|margherita/i.test(p) },
+        { t: "Includi una bevanda gassata.", v: p => /coca|pepsi|fanta|sprite/i.test(p) },
+        { t: "Includi un genere cinematografico.", v: p => /horror|action|comedy|drama/i.test(p) },
+        { t: "Includi un rettile.", v: p => /serpente|coccodrillo|lucertola/i.test(p) },
+        { t: "VISIVO: Cosa rappresentano?", v: p => /tempo|orolog/i.test(p), box: "⏰⏳📅" },
+        { t: "Includi un elemento naturale (Fuoco, Acqua...).", v: p => /fuoco|acqua|terra|aria/i.test(p) },
+        { t: "Includi un famoso esploratore.", v: p => /colombo|polo|magellano/i.test(p) },
+        { t: "Includi un organo umano.", v: p => /cuore|cervello|polmoni|fegato/i.test(p) },
+        { t: "Includi una costellazione.", v: p => /orione|orsa|cassiopea/i.test(p) },
+        { t: "VISIVO: Tema visivo.", v: p => /meteo|temp/i.test(p), box: "☀️⛈️❄️" },
+        { t: "Includi un dinosauro.", v: p => /trex|triceratopo|velociraptor/i.test(p) },
+        { t: "Includi un premio Nobel italiano.", v: p => /rubbia|montalcini|fo|pirandello/i.test(p) },
+        { t: "Includi la parola 'ULTRA'.", v: p => p.includes("ULTRA") },
+        { t: "Includi un mammifero marino.", v: p => /balena|delfino|orca/i.test(p) },
+        { t: "VISIVO: Categoria?", v: p => /scuol|studi/i.test(p), box: "📚✏️🎒" },
+        { t: "Includi un minerale.", v: p => /quarzo|diamante|rubino/i.test(p) },
+        { t: "Includi un genere letterario.", v: p => /fantasy|giallo|romanzo/i.test(p) },
+        { t: "Includi uno strumento a fiato.", v: p => /flauto|tromba|sassofono/i.test(p) },
+        { t: "Includi la capitale del Giappone.", v: p => /tokyo/i.test(p) },
+        { t: "VISIVO: Cosa indicano?", v: p => /emozion|sentiment/i.test(p), box: "😂😍😡" },
+        { t: "Includi un architetto famoso.", v: p => /piano|gaudi|michelangelo/i.test(p) },
+        { t: "Includi una parola di 10 lettere esatte.", v: p => (p.match(/[a-z]{10}/i) || []).length > 0 },
+        { t: "Includi un satellite naturale.", v: p => /luna|europa|titano/i.test(p) },
+        { t: "Includi un metallo alcalino.", v: p => /litio|sodio|potassio/i.test(p) },
+        { t: "VISIVO: Categoria?", v: p => /sold|denar/i.test(p), box: "💰💵💎" },
+        { t: "Includi un linguaggio markup.", v: p => /html|xml|markdown/i.test(p) },
+        { t: "Includi una città che ha ospitato le Olimpiadi.", v: p => /parigi|pechino|sidney|atene/i.test(p) },
+        { t: "Includi un famoso navigatore web.", v: p => /chrome|safari|firefox|edge/i.test(p) },
+        { t: "Includi un osso del corpo umano.", v: p => /femore|tibia|omero/i.test(p) },
+        { t: "VISIVO: Tema?", v: p => /viaggi|vacanz/i.test(p), box: "🧳✈️🏝️" },
+        { t: "Includi un artista del Rinascimento.", v: p => /da vinci|raffaello|donatello/i.test(p) },
+        { t: "Includi un prefisso telefonico italiano.", v: p => /02|06|011|081|051/.test(p) },
+        { t: "Includi un simbolo zodiacale.", v: p => /leone|vergine|toro|pesci/i.test(p) },
+        { t: "Includi la parola 'FINE'.", v: p => p.includes("FINE") },
+
+        // --- FASE CAOS (80-100) ---
+        { t: "POLLO: Inserisci 🐔 nella password.", v: p => p.includes("🐔") },
+        { t: "CIBO: Il pollo ha fame, servono 3 semi (*).", v: p => (p.match(/\*/g)||[]).length >= 3 },
+        { t: "ACQUA: Inserisci 💧💧💧 per raffreddare il sistema.", v: p => (p.match(/💧/g)||[]).length >= 3 },
+        { t: () => `SYNC: Digita il codice attivo: ${syncCode}`, v: p => p.includes(syncCode) },
+        { t: "ANTIVIRUS: Includi 'SCAN-COMPLETE'.", v: p => p.includes("SCAN-COMPLETE") }
     ];
 
-    // Riempimento dinamico per i livelli 20-100 con logica interattiva
-    for(let i=11; i<=100; i++) {
-        if(i === 20) {
-            rules.push({ 
-                t: "ENIGMA: Risolvi e scrivi il risultato: (12 + 8) / 2 + 5", 
-                v: p => p.includes("15"),
-                interactive: true,
-                html: "<div class='interactive-box'>Calcolo richiesto: 20/2 + 5</div>"
-            });
-        } else if(i === 30) {
-            rules.push({
-                t: "MEMORIA: Scrivi la sequenza di emoji apparsa.",
-                v: p => p.includes(simonSequence),
-                interactive: true,
-                html: `<div class='interactive-box' id='simon-box'>${simonSequence}</div>`
-            });
-            setTimeout(() => { document.getElementById('simon-box').innerText = "??? (Scomparsa!)"; showSimon = false; }, 5000);
-        } else if(i >= 80) {
-            rules.push({ t: `Raggiungi lunghezza ${i + 20}.`, v: p => p.length >= i + 20 });
-        } else {
-            rules.push({ t: `Livello di sicurezza ${i}: Includi 'Master${i}'.`, v: p => p.includes(`Master${i}`) });
-        }
+    // Riempimento fino a 100 con lunghezze crescenti per la sfida finale
+    for(let i = rules.length; i < 99; i++) {
+        rules.push({ t: `Raggiungi ${i + 15} caratteri totali.`, v: p => p.length >= i + 15 });
     }
+    rules.push({ t: "ULTIMA REGOLA: La password è definitiva.", v: p => true });
 
-    // Aggiunta regole finali fisse
-    rules[79] = { t: "IL POLLO È NATO: Inserisci 🐔.", v: p => p.includes("🐔") };
-    rules[80] = { t: "SFAMA IL POLLO: 3 semi (*).", v: p => (p.match(/\*/g)||[]).length >= 3 };
-    rules[81] = { t: "ESTINTORE: Usa 💧💧💧.", v: p => (p.match(/💧/g)||[]).length >= 3 };
-
-    function update() {
+    function check() {
         const val = input.value;
         const s = getSum(val);
-        sumDisp.innerText = s;
-        sumDisp.style.color = s === 25 ? "var(--success)" : "var(--error)";
-        lvlDisp.innerText = currentLevel;
+        document.getElementById('sum').innerText = s;
+        document.getElementById('sum').style.color = s === 25 ? "var(--success)" : "var(--error)";
+        document.getElementById('lvl').innerText = currentLevel;
 
         let html = "";
         let allOk = true;
 
         for (let i = 0; i < currentLevel; i++) {
             let r = rules[i];
+            let txt = typeof r.t === 'function' ? r.t() : r.t;
             let ok = r.v(val);
             if(!ok) allOk = false;
-            html += `
-                <div class="rule ${ok ? 'valid' : 'invalid'}">
-                    <b>LV ${i+1}</b>: ${typeof r.t === 'function' ? r.t() : r.t}
-                    ${r.interactive && !ok ? r.html : ''}
-                </div>`;
+            html += `<div class="rule ${ok ? 'valid' : 'invalid'}">
+                        <b>LV ${i+1}</b>: ${txt}
+                        ${r.box && !ok ? `<div class="visual-box" style="font-size:2rem">${r.box}</div>` : ''}
+                    </div>`;
         }
 
         container.innerHTML = html;
-
-        if(allOk && currentLevel < 100) {
+        if(allOk && currentLevel < rules.length) {
             currentLevel++;
-            update();
-        } else if(allOk && currentLevel === 100) {
+            check();
+        } else if(allOk && currentLevel === rules.length) {
             document.getElementById('win-screen').style.display = 'flex';
         }
     }
 
-    // Ciclo Caos (Ogni 2s)
+    // Ciclo Caos ogni 2 secondi
     setInterval(() => {
         if(currentLevel >= 80) {
-            document.getElementById('stats').style.display = 'block';
+            document.getElementById('chaos-stats').style.display = 'block';
             syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
-            document.getElementById('sync-code').innerText = syncCode;
+            document.getElementById('sync-val').innerText = syncCode;
 
-            // Logica Pollo
-            if(!input.value.includes("🐔") || (input.value.match(/\*/g)||[]).length < 3) hp -= 5;
-            else if(hp < 100) hp += 2;
-            document.getElementById('hp').innerText = hp;
-            if(hp <= 0) { alert("SISTEMA CRASHATO: Pollo morto."); location.reload(); }
-
-            // Logica Fuoco e Terremoto
+            if(!input.value.includes("🐔") || (input.value.match(/\*/g)||[]).length < 3) hp -= 4;
+            else if(hp < 100) hp += 1;
+            
             if(input.value.length > 50) fire += 2;
-            if(input.value.includes("💧💧💧")) fire = Math.max(0, fire - 15);
-            document.getElementById('fire').innerText = fire;
-            if(fire > 50) document.getElementById('main-header').classList.add('shake-effect');
-            else document.getElementById('main-header').classList.remove('shake-effect');
+            if(input.value.includes("💧💧💧")) fire = Math.max(0, fire - 10);
+
+            document.getElementById('hp').innerText = hp;
+            document.getElementById('fire').innerText = Math.floor(fire);
+
+            if(fire > 40) document.body.classList.add('shake');
+            else document.body.classList.remove('shake');
+
+            if(hp <= 0) { alert("POLLO MORTO. RIPROVA."); location.reload(); }
         }
-        update();
+        check();
     }, 2000);
 
-    input.addEventListener('input', update);
-    update();
+    input.addEventListener('input', check);
+    check();
 </script>
 </body>
 </html>
