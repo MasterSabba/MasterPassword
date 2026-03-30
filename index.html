@@ -66,11 +66,11 @@
 </div>
 
 <div class="header-box" id="main-ui">
-    <h2 style="margin: 0 0 10px 0; color: var(--accent)">MASTER PASSWORD </h2>
+    <h2 style="margin: 0 0 10px 0; color: var(--accent)">MASTER PASSWORD</h2>
     <textarea id="pwd-input" spellcheck="false" placeholder="Inizia a scrivere..."></textarea>
     <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold;">
-        <span> <span id="lvl">1</span>/100</span>
-        <span id="sum-box"> <span id="sum">0</span>/25</span>
+        <span>LV <span id="lvl">1</span>/100</span>
+        <span id="sum-box">SUM: <span id="sum">0</span>/25</span>
     </div>
     <div id="chaos-stats" style="display:none; margin-top:10px; border-top: 1px solid #333; padding-top:10px;">
         <span style="color:var(--chicken)">POLLO: <span id="hp">100</span>%</span> | 
@@ -87,10 +87,10 @@
     
     let currentLevel = 1;
     let hp = 100, fire = 0, syncCode = "";
+    let lastSyncTime = Date.now(); 
 
     const getSum = (s) => (s.match(/\d/g) || []).reduce((a, b) => a + Number(b), 0);
 
-    // --- DEFINIZIONE REGOLE UNICHE (1-100) ---
     const rules = [
         { t: "Minimo 6 caratteri.", v: p => p.length >= 6 },
         { t: "Includi un numero.", v: p => /\d/.test(p) },
@@ -114,13 +114,11 @@
         { t: "Includi una sequenza numerica (123, 456...).", v: p => /012|123|234|345|456|567|678|789/.test(p) },
         { t: "Includi un metallo prezioso.", v: p => /oro|argento|platino/i.test(p) },
         { t: "Includi una capitale europea.", v: p => /roma|parigi|berlino|madrid|londra|vienna|lisbona/i.test(p) },
-        
-        // --- LIVELLI INTERATTIVI (20-79) ---
-        { t: "VISIVO: Digita la categoria di questi oggetti.", v: p => /monument|edifici/i.test(p), box: "🗼🗽🏯", hint: "Turismo..." },
-        { t: "MATEMATICA: Risolvi e scrivi il risultato: (15 * 2) - 10", v: p => p.includes("20") },
-        { t: "Includi il nome di un supereroe Marvel.", v: p => /spiderman|ironman|thor|hulk|blackwidow/i.test(p) },
+        { t: "VISIVO: Categoria oggetti.", v: p => /monument|edifici/i.test(p), box: "🗼🗽🏯" },
+        { t: "MATEMATICA: Risolvi: (15 * 2) - 10", v: p => p.includes("20") },
+        { t: "Includi un supereroe Marvel.", v: p => /spiderman|ironman|thor|hulk|blackwidow/i.test(p) },
         { t: "Includi una marca di auto italiana.", v: p => /ferrari|fiat|lancia|alfa/i.test(p) },
-        { t: "LOGICA: Scrivi la parola 'PASSWORD' al contrario.", v: p => p.includes("DROWSSAP") },
+        { t: "LOGICA: Scrivi 'PASSWORD' al contrario.", v: p => p.includes("DROWSSAP") },
         { t: "VISIVO: Qual è il tema?", v: p => /musica|strument/i.test(p), box: "🎸🎹🥁" },
         { t: "Includi un linguaggio di programmazione.", v: p => /python|java|html|css|javascript|ruby/i.test(p) },
         { t: "Includi una divinità greca.", v: p => /zeus|era|ares|atena|apollo|afrodite/i.test(p) },
@@ -168,24 +166,21 @@
         { t: "Includi un metallo alcalino.", v: p => /litio|sodio|potassio/i.test(p) },
         { t: "VISIVO: Categoria?", v: p => /sold|denar/i.test(p), box: "💰💵💎" },
         { t: "Includi un linguaggio markup.", v: p => /html|xml|markdown/i.test(p) },
-        { t: "Includi una città che ha ospitato le Olimpiadi.", v: p => /parigi|pechino|sidney|atene/i.test(p) },
-        { t: "Includi un famoso navigatore web.", v: p => /chrome|safari|firefox|edge/i.test(p) },
-        { t: "Includi un osso del corpo umano.", v: p => /femore|tibia|omero/i.test(p) },
+        { t: "Includi una città delle Olimpiadi.", v: p => /parigi|pechino|sidney|atene/i.test(p) },
+        { t: "Includi un navigatore web.", v: p => /chrome|safari|firefox|edge/i.test(p) },
+        { t: "Includi un osso umano.", v: p => /femore|tibia|omero/i.test(p) },
         { t: "VISIVO: Tema?", v: p => /viaggi|vacanz/i.test(p), box: "🧳✈️🏝️" },
         { t: "Includi un artista del Rinascimento.", v: p => /da vinci|raffaello|donatello/i.test(p) },
-        { t: "Includi un prefisso telefonico italiano.", v: p => /02|06|011|081|051/.test(p) },
+        { t: "Includi un prefisso telefonico (02, 06...).", v: p => /02|06|011|081|051/.test(p) },
         { t: "Includi un simbolo zodiacale.", v: p => /leone|vergine|toro|pesci/i.test(p) },
         { t: "Includi la parola 'FINE'.", v: p => p.includes("FINE") },
-
-        // --- FASE CAOS (80-100) ---
-        { t: "POLLO: Inserisci 🐔 nella password.", v: p => p.includes("🐔") },
-        { t: "CIBO: Il pollo ha fame, servono 3 semi (*).", v: p => (p.match(/\*/g)||[]).length >= 3 },
-        { t: "ACQUA: Inserisci 💧💧💧 per raffreddare il sistema.", v: p => (p.match(/💧/g)||[]).length >= 3 },
-        { t: () => `SYNC: Digita il codice attivo: ${syncCode}`, v: p => p.includes(syncCode) },
+        { t: "POLLO: Inserisci 🐔.", v: p => p.includes("🐔") },
+        { t: "CIBO: Il pollo ha fame (3 semi: *).", v: p => (p.match(/\*/g)||[]).length >= 3 },
+        { t: "ACQUA: Raffredda con 💧💧💧.", v: p => (p.match(/💧/g)||[]).length >= 3 },
+        { t: () => `SYNC: Digita il codice: ${syncCode}`, v: p => p.includes(syncCode) },
         { t: "ANTIVIRUS: Includi 'SCAN-COMPLETE'.", v: p => p.includes("SCAN-COMPLETE") }
     ];
 
-    // Riempimento fino a 100 con lunghezze crescenti per la sfida finale
     for(let i = rules.length; i < 99; i++) {
         rules.push({ t: `Raggiungi ${i + 15} caratteri totali.`, v: p => p.length >= i + 15 });
     }
@@ -221,29 +216,47 @@
         }
     }
 
-    // Ciclo Caos ogni 2 secondi
     setInterval(() => {
+        const ora = Date.now();
+        const tempoTrascorso = ora - lastSyncTime;
+        const val = input.value;
+
         if(currentLevel >= 80) {
             document.getElementById('chaos-stats').style.display = 'block';
-            syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
-            document.getElementById('sync-val').innerText = syncCode;
+            const syncLabel = document.getElementById('sync-val');
 
-            if(!input.value.includes("🐔") || (input.value.match(/\*/g)||[]).length < 3) hp -= 4;
-            else if(hp < 100) hp += 1;
-            
-            if(input.value.length > 50) fire += 2;
-            if(input.value.includes("💧💧💧")) fire = Math.max(0, fire - 10);
+            if (tempoTrascorso >= 17000) {
+                syncLabel.style.color = "var(--error)";
+                syncLabel.style.opacity = (Math.floor(ora/200) % 2) ? "1" : "0.3"; 
+            } else {
+                syncLabel.style.color = "var(--accent)";
+                syncLabel.style.opacity = "1";
+            }
 
-            document.getElementById('hp').innerText = hp;
+            if (tempoTrascorso >= 20000) {
+                syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
+                syncLabel.innerText = syncCode;
+                lastSyncTime = ora;
+            }
+
+            // LOGICA POLLO (Danni/Cura)
+            if(!val.includes("🐔") || (val.match(/\*/g)||[]).length < 3) hp = Math.max(0, hp - 0.8);
+            else if(hp < 100) hp = Math.min(100, hp + 0.4);
+
+            // LOGICA FUOCO (Calore/Estinzione)
+            if(val.length > 50) fire = Math.min(100, fire + 0.4);
+            if(val.includes("💧💧💧")) fire = Math.max(0, fire - 2);
+
+            document.getElementById('hp').innerText = Math.floor(hp);
             document.getElementById('fire').innerText = Math.floor(fire);
 
             if(fire > 40) document.body.classList.add('shake');
             else document.body.classList.remove('shake');
 
-            if(hp <= 0) { alert("POLLO MORTO. RIPROVA."); location.reload(); }
+            if(hp <= 0) { alert("POLLO MORTO. REBOOT RICHIESTO."); location.reload(); }
         }
         check();
-    }, 2000);
+    }, 500);
 
     input.addEventListener('input', check);
     check();
