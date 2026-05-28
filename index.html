@@ -16,6 +16,7 @@
             font-family: 'JetBrains Mono', monospace;
             display: flex; flex-direction: column; align-items: center;
             margin: 0; padding: 20px; transition: 0.1s;
+            position: relative;
         }
 
         @keyframes shake {
@@ -55,9 +56,33 @@
             position: fixed; inset: 0; background: var(--bg);
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
         }
+
+        /* STILE PULSANTE EXIT GRIGIO SCURO INTEGRATO */
+        .exit-button {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 2rem;
+            line-height: 1;
+            color: #333; /* Grigio scuro integrato con i bordi */
+            text-decoration: none;
+            z-index: 1001;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            font-family: Arial, sans-serif;
+        }
+        .exit-button:hover {
+            color: var(--text); /* Diventa chiaro al passaggio del mouse */
+            transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .header-box { margin-top: 40px; }
+        }
     </style>
 </head>
 <body>
+
+<a href="https://mastersabba.github.io/MasterSabba/" class="exit-button" title="Torna all'Hub">×</a>
 
 <div id="win-screen">
     <h1 style="color: var(--success)">SISTEMA DECRIPTATO ✅</h1>
@@ -170,7 +195,7 @@
         { t: "Includi un navigatore web.", v: p => /chrome|safari|firefox|edge/i.test(p) },
         { t: "Includi un osso umano.", v: p => /femore|tibia|omero/i.test(p) },
         { t: "VISIVO: Tema?", v: p => /viaggi|vacanz/i.test(p), box: "🧳✈️🏝️" },
-        { t: "Includi un artista del Rinascimento.", v: p => /da vinci|raffaello|donatello/i.test(p) },
+        { t: "Includi un artist del Rinascimento.", v: p => /da vinci|raffaello|donatello/i.test(p) },
         { t: "Includi un prefisso telefonico (02, 06...).", v: p => /02|06|011|081|051/.test(p) },
         { t: "Includi un simbolo zodiacale.", v: p => /leone|vergine|toro|pesci/i.test(p) },
         { t: "Includi la parola 'FINE'.", v: p => p.includes("FINE") },
