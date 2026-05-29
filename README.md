@@ -11,6 +11,6 @@ Il gioco include:
 - Interfaccia minimal e focalizzata sulla scrittura
 - Meccaniche di sopravvivenza e pressione crescente
 
-È collegato alla repository centrale MasterHub (https://mastersabba.github.io/MasterSabba/), piena di altri minigame.
+È collegato alla repository centrale MasterGames (https://mastersabba.github.io/MasterSabba/), piena di altri minigame.
 
 ![Immagine](IMG_9427.jpeg)
