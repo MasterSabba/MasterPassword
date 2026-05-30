@@ -86,12 +86,15 @@
 
 <div id="win-screen">
     <h1 style="color: var(--success)">SISTEMA DECRIPTATO ✅</h1>
-    <p>Hai superato i 100 livelli.</p>
+    <p id="win-text">Hai superato i 100 livelli.</p>
     <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">RESTART</button>
 </div>
 
 <div class="header-box" id="main-ui">
-    <h2 style="margin: 0 0 10px 0; color: var(--accent)">MASTER PASSWORD</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h2 style="margin: 0; color: var(--accent)">MASTER PASSWORD</h2>
+        <span style="font-weight: bold; opacity: 0.8; font-size: 0.9rem;">Punti Hub: <span id="pts" style="color:var(--success)">0</span></span>
+    </div>
     <textarea id="pwd-input" spellcheck="false" placeholder="Inizia a scrivere..."></textarea>
     <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold;">
         <span>LV <span id="lvl">1</span>/100</span>
@@ -113,6 +116,12 @@
     let currentLevel = 1;
     let hp = 100, fire = 0, syncCode = "";
     let lastSyncTime = Date.now(); 
+
+    // --- LOGICA SALVATAGGIO PUNTI ---
+    let score = parseInt(localStorage.getItem('mp_score')) || 0;
+    localStorage.setItem('points_masterpassword', score); // Sincronizza Hub all'avvio
+    document.getElementById('pts').innerText = score;
+    let hasWon = false;
 
     const getSum = (s) => (s.match(/\d/g) || []).reduce((a, b) => a + Number(b), 0);
 
@@ -238,6 +247,16 @@
             check();
         } else if(allOk && currentLevel === rules.length) {
             document.getElementById('win-screen').style.display = 'flex';
+            
+            // ASSEGNAZIONE PUNTI VITTORIA
+            if (!hasWon) {
+                hasWon = true;
+                score += 50;
+                localStorage.setItem('mp_score', score);
+                localStorage.setItem('points_masterpassword', score);
+                document.getElementById('pts').innerText = score;
+                document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+50 💎 salvati nell'Hub!</span>";
+            }
         }
     }
 
@@ -249,6 +268,12 @@
         if(currentLevel >= 80) {
             document.getElementById('chaos-stats').style.display = 'block';
             const syncLabel = document.getElementById('sync-val');
+
+            // Inizializza subito il codice se è vuoto per evitare bug visivi iniziali
+            if (!syncCode) {
+                syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
+                syncLabel.innerText = syncCode;
+            }
 
             if (tempoTrascorso >= 17000) {
                 syncLabel.style.color = "var(--error)";
