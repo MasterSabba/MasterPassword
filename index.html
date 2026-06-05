@@ -64,7 +64,7 @@
             left: 20px;
             font-size: 2rem;
             line-height: 1;
-            color: #333; /* Grigio scuro integrato con i bordi */
+            color: #333;
             text-decoration: none;
             z-index: 1001;
             transition: all 0.2s ease;
@@ -72,7 +72,7 @@
             font-family: Arial, sans-serif;
         }
         .exit-button:hover {
-            color: var(--text); /* Diventa chiaro al passaggio del mouse */
+            color: var(--text);
             transform: scale(1.1);
         }
         @media (max-width: 768px) {
@@ -185,7 +185,7 @@
         { t: "Includi una costellazione.", v: p => /orione|orsa|cassiopea/i.test(p) },
         { t: "VISIVO: Tema visivo.", v: p => /meteo|temp/i.test(p), box: "☀️⛈️❄️" },
         { t: "Includi un dinosauro.", v: p => /trex|triceratopo|velociraptor/i.test(p) },
-        { t: "Includi un premio Nobel italiano.", v: p => /rubbia|montalcini|fo|pirandello |fermi/i.test(p) },
+        { t: "Includi un premio Nobel italiano.", v: p => /rubbia|montalcini|fo|pirandello|fermi/i.test(p) },
         { t: "Includi la parola 'ULTRA'.", v: p => p.includes("ULTRA") },
         { t: "Includi un mammifero marino.", v: p => /balena|delfino|orca/i.test(p) },
         { t: "VISIVO: Categoria?", v: p => /scuol|studi/i.test(p), box: "📚✏️🎒" },
@@ -269,7 +269,6 @@
             document.getElementById('chaos-stats').style.display = 'block';
             const syncLabel = document.getElementById('sync-val');
 
-            // Inizializza subito il codice se è vuoto per evitare bug visivi iniziali
             if (!syncCode) {
                 syncCode = Math.random().toString(36).substring(2,5).toUpperCase();
                 syncLabel.innerText = syncCode;
@@ -289,11 +288,9 @@
                 lastSyncTime = ora;
             }
 
-            // LOGICA POLLO (Danni/Cura)
             if(!val.includes("🐔") || (val.match(/\*/g)||[]).length < 3) hp = Math.max(0, hp - 0.8);
             else if(hp < 100) hp = Math.min(100, hp + 0.4);
 
-            // LOGICA FUOCO (Calore/Estinzione)
             if(val.length > 50) fire = Math.min(100, fire + 0.4);
             if(val.includes("💧💧💧")) fire = Math.max(0, fire - 2);
 
