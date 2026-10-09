@@ -262,6 +262,9 @@
                 localStorage.setItem('points_masterpassword', score);
                 document.getElementById('pts').innerText = score;
                 document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+50 💎 salvati nell'Hub!</span>";
+                
+                // AGGIUNGI QUESTA RIGA QUI:
+                inviaVittoriaAlHub(50);
             }
         }
     }
@@ -313,6 +316,16 @@
 
     input.addEventListener('input', check);
     check();
+
+    function inviaVittoriaAlHub(puntiBonus = 50) {
+  const target = window.opener || (window.parent !== window ? window.parent : null);
+  if (target) {
+    target.postMessage({
+      gameKey: 'master-password', // Identificativo esatto per MasterPassword
+      points: puntiBonus
+    }, '*');
+  }
+}
 </script>
 </body>
 </html>
