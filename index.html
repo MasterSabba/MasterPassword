@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MasterPassword: The 100 Trial</title>
+    <title>Code Breaker: The 100 Trial</title>
     <style>
         :root {
             --bg: #050508; --card: #0d0d12; --accent: #00f2ff;
@@ -98,7 +98,7 @@
 
 <div class="header-box" id="main-ui">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h2 style="margin: 0; color: var(--accent)">MASTER PASSWORD</h2>
+        <h2 style="margin: 0; color: var(--accent)">CODE BREAKER</h2>
         <span style="font-weight: bold; opacity: 0.8; font-size: 0.9rem;">Punti Hub: <span id="pts" style="color:var(--success)">0</span></span>
     </div>
     <textarea id="pwd-input" spellcheck="false" placeholder="Inizia a scrivere..."></textarea>
@@ -125,7 +125,7 @@
 
     // --- LOGICA SALVATAGGIO PUNTI ---
     let score = parseInt(localStorage.getItem('mp_score')) || 0;
-    localStorage.setItem('points_masterpassword', score); 
+    localStorage.setItem('points_', score); 
     document.getElementById('pts').innerText = score;
     let hasWon = false;
 
@@ -259,7 +259,7 @@
                 hasWon = true;
                 score += 50;
                 localStorage.setItem('mp_score', score);
-                localStorage.setItem('points_masterpassword', score);
+                localStorage.setItem('points_Code Breaker', score);
                 document.getElementById('pts').innerText = score;
                 document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+50 💎 salvati nell'Hub!</span>";
                 
@@ -321,7 +321,7 @@
   const target = window.opener || (window.parent !== window ? window.parent : null);
   if (target) {
     target.postMessage({
-      gameKey: 'master-password', // Identificativo esatto per MasterPassword
+      gameKey: 'master-password', // Identificativo esatto per Code Breaker
       points: puntiBonus
     }, '*');
   }
