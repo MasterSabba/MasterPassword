@@ -261,7 +261,8 @@
                 localStorage.setItem('mp_score', score);
                 localStorage.setItem('points_Code Breaker', score);
                 document.getElementById('pts').innerText = score;
-                document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+50 💎 salvati nell'Hub!</span>";
+                document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+1000
+ 💎 salvati nell'Hub!</span>";
                 
                 // AGGIUNGI QUESTA RIGA QUI:
                 inviaVittoriaAlHub(1000);
@@ -317,7 +318,7 @@
     input.addEventListener('input', check);
     check();
 
-    function inviaVittoriaAlHub(puntiBonus = 50) {
+    function inviaVittoriaAlHub(puntiBonus = 1000) {
   const target = window.opener || (window.parent !== window ? window.parent : null);
   if (target) {
     target.postMessage({
