@@ -58,32 +58,15 @@
         }
 
         .exit-button {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 2rem;
-            line-height: 1;
-            color: #333;
-            text-decoration: none;
-            z-index: 1001;
-            transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
-            font-family: Arial, sans-serif;
+            position: absolute; top: 15px; left: 20px; font-size: 2rem; line-height: 1;
+            color: #555; text-decoration: none; z-index: 1001;
+            transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; font-family: Arial, sans-serif;
         }
-        .exit-button:hover {
-            color: var(--text);
-            transform: scale(1.1);
-        }
+        .exit-button:hover { color: var(--text); transform: scale(1.1); }
+
         @media (max-width: 768px) {
             .header-box { margin-top: 40px; }
         }
-
-            .exit-button {
-            position: absolute; top: 15px; left: 20px; font-size: 2rem; line-height: 1;
-            color: var(--empty-border); text-decoration: none; z-index: 100;
-            transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; font-family: Arial, sans-serif;
-        }
-        .exit-button:hover { color: var(--text-color); transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -130,6 +113,16 @@
     let hasWon = false;
 
     const getSum = (s) => (s.match(/\d/g) || []).reduce((a, b) => a + Number(b), 0);
+
+    function inviaVittoriaAlHub(puntiBonus = 1000) {
+        const target = window.opener || (window.parent !== window ? window.parent : null);
+        if (target) {
+            target.postMessage({
+                gameKey: 'master-password',
+                points: puntiBonus
+            }, '*');
+        }
+    }
 
     const rules = [
         { t: "Minimo 6 caratteri.", v: p => p.length >= 6 },
@@ -254,17 +247,14 @@
         } else if(allOk && currentLevel === rules.length) {
             document.getElementById('win-screen').style.display = 'flex';
             
-            // ASSEGNAZIONE PUNTI VITTORIA
             if (!hasWon) {
                 hasWon = true;
                 score += 50;
                 localStorage.setItem('mp_score', score);
                 localStorage.setItem('points_Code Breaker', score);
                 document.getElementById('pts').innerText = score;
-                document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+1000
- 💎 salvati nell'Hub!</span>";
+                document.getElementById('win-text').innerHTML = "Hai superato i 100 livelli.<br><span style='color:var(--success); font-weight:bold;'>+1000 💎 salvati nell'Hub!</span>";
                 
-                // AGGIUNGI QUESTA RIGA QUI:
                 inviaVittoriaAlHub(1000);
             }
         }
@@ -317,16 +307,6 @@
 
     input.addEventListener('input', check);
     check();
-
-    function inviaVittoriaAlHub(puntiBonus = 1000) {
-  const target = window.opener || (window.parent !== window ? window.parent : null);
-  if (target) {
-    target.postMessage({
-      gameKey: 'master-password', // Identificativo esatto per Code Breaker
-      points: puntiBonus
-    }, '*');
-  }
-}
 </script>
 </body>
 </html>
